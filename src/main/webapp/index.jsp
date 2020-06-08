@@ -216,9 +216,6 @@ http://localhost:3306/crud
  			})
  		}
  		
- 		
-		
- 		
  		var nextPageli = $("<li></li>").append( $("<a></a>").append("&raquo;") );
  		var lastPageli = $("<li></li>").append( $("<a></a>").append("尾页").attr("href","#") );
  		
@@ -272,7 +269,17 @@ http://localhost:3306/crud
 			}
 		});
 	}
+ 	function validate_add_form(){
+ 		var empName = $("#empName_add_input").val();
+ 		var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/;
+ 		alert(regName.test(empName));
+ 		return false;
+ 	}
  	$('#emp_save_btn').click(function(){
+ 		//校验
+ 		if(!validate_add_form()){
+ 			return false;
+ 		}
  		//console.dir($("#myModal form").serialize());
  		$.ajax({
 			url:"${APP_PATH}/emp",
