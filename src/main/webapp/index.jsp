@@ -41,6 +41,7 @@ http://localhost:3306/crud
 			    <label  class="col-sm-2 control-label">empName</label>
 			    <div class="col-sm-10">
 			      <input type="text" name="empName" class="form-control" id="empName_add_input" placeholder="empName">
+			       <span class="help-block"></span>
 			    </div>
 			  </div>
 			  <div class="form-group">
@@ -272,9 +273,42 @@ http://localhost:3306/crud
  	function validate_add_form(){
  		var empName = $("#empName_add_input").val();
  		var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/;
- 		alert(regName.test(empName));
+ 		if(!regName.test(empName)){
+ 			show_validate_msg("#empName_add_input","error","用户名可以是2-5位中文或者6-16位英文和数字的组合");
+ 			//alert("用户名可以是2-5位中文或者6-16位英文和数字的组合");
+ 			//$("#empName_add_input").parent().addClass("has-error");
+ 			//$("#empName_add_input").next("span").text("用户名可以是2-5位中文或者6-16位英文和数字的组合");
+ 			return false;
+ 		}else{
+ 			show_validate_msg("#empName_add_input","success","");
+ 			//$("#empName_add_input").parent().addClass("has-success");
+ 			//$("#empName_add_input").next("span").text("");
+ 		}
+ 		
+ 		var email = $("#email_add_input").val();
+ 		var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+ 		if(!regEmail.test(email)){
+ 			alert("邮箱格式不正确");
+ 			return false;
+ 		}
+ 		
  		return false;
  	}
+ 	
+ 	function show_validate_msg(ele,statu,msg){
+ 		$(ele).parent().removeClass("has-success has-error");
+ 		$(ele).next("span").text("");
+ 		if(statu=="success"){
+ 			$(ele).parent().addClass("has-success");
+ 		}else if(statu=="error"){
+ 			$(ele).parent().addClass("has-error");
+ 		}
+ 		$(ele).next("span").text(msg);
+ 	}
+ 	$("#empName_add_input").change(function(){
+ 		
+ 	})
+ 	
  	$('#emp_save_btn').click(function(){
  		//校验
  		if(!validate_add_form()){

@@ -22,6 +22,15 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
 	
+	@RequestMapping(value="/checkuser")
+	@ResponseBody
+	public Msg checkUser(String empName) {
+		if(employeeService.checkUser(empName)){
+			return Msg.success(); 
+		}
+		return Msg.fail(); 
+	}
+	
 	@RequestMapping(value="/emp",method=RequestMethod.POST)
 	@ResponseBody
 	public Msg saveEmp(Employee employee) {
