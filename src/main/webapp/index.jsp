@@ -312,7 +312,8 @@ http://localhost:3306/crud
 			data:"empName="+empName,
 			type:"POST",
 			success:function(result){
-				//console.dir(result);
+				
+				//console.dir(123);
 				if(result.code == 100 ){
 					show_validate_msg("#empName_add_input","success","用户名可用");
 				}else{
