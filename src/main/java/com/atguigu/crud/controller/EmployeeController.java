@@ -24,7 +24,7 @@ public class EmployeeController {
 	
 	@RequestMapping(value="/checkuser")
 	@ResponseBody
-	public Msg checkUser(String empName) {
+	public Msg checkUser(@RequestParam(value = "empName") String empName) {
 		if(employeeService.checkUser(empName)){
 			return Msg.success(); 
 		}

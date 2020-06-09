@@ -306,7 +306,20 @@ http://localhost:3306/crud
  		$(ele).next("span").text(msg);
  	}
  	$("#empName_add_input").change(function(){
- 		
+ 		var empName = this.value;
+ 		$.ajax({
+			url:"${APP_PATH}/checkuser",
+			data:"empName="+empName,
+			type:"POST",
+			success:function(result){
+				//console.dir(result);
+				if(result.code == 100 ){
+					show_validate_msg("#empName_add_input","success","用户名可用");
+				}else{
+					show_validate_msg("#empName_add_input","fail","用户名不可用");
+				}
+			}
+		});
  	})
  	
  	$('#emp_save_btn').click(function(){
