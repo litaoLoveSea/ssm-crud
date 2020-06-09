@@ -248,14 +248,22 @@ http://localhost:3306/crud
  		
  		var navEle = $("<nav></nav>").append(ul);
  		navEle.appendTo("#page_nav_area");
-	} 
+	}
+ 	function reset_form(ele){
+ 		$(ele)[0].reset();
+ 		$(ele).find("*").removeClass("has-success has-error");
+ 		$(ele).find(".help-block").text("");
+ 	}
  	$('#emp_add_modal_btn').click(function(){
+ 		reset_form("#myModal form");
+ 		//$("#myModal form")[0].reset();//[0] 容易错  因为是调用js
  		getDepts();
  		$('#myModal').modal({
  			backdrop:'static'
  		})
  	})
  	function getDepts(){
+ 		$("#myModal select").empty();
 		$.ajax({
 			url:"${APP_PATH}/depts",
 			type:"GET",
@@ -292,7 +300,7 @@ http://localhost:3306/crud
  			return false;
  		}
  		
- 		return false;
+ 		return true;
  	}
  	
  	function show_validate_msg(ele,statu,msg){
@@ -312,12 +320,13 @@ http://localhost:3306/crud
 			data:"empName="+empName,
 			type:"POST",
 			success:function(result){
-				
 				//console.dir(123);
 				if(result.code == 100 ){
 					show_validate_msg("#empName_add_input","success","用户名可用");
+					$('#emp_save_btn').attr("ajax_va","success");
 				}else{
-					show_validate_msg("#empName_add_input","fail","用户名不可用");
+					show_validate_msg("#empName_add_input","error",result.extend.va_msg);
+					$('#emp_save_btn').attr("ajax_va","error");
 				}
 			}
 		});
@@ -328,6 +337,10 @@ http://localhost:3306/crud
  		if(!validate_add_form()){
  			return false;
  		}
+ 		if($('#emp_save_btn').attr("ajax_va") == "error"){
+ 			return false;
+ 		}
+ 		
  		//console.dir($("#myModal form").serialize());
  		$.ajax({
 			url:"${APP_PATH}/emp",
