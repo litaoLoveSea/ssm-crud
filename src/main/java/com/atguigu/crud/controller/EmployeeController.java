@@ -1,10 +1,15 @@
 package com.atguigu.crud.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +27,77 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
 	
+	/**
+	 * 单个批量二合一
+	 * 单个 1
+	 * 批量 1-2-3	
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/emp/{ids}",method=RequestMethod.DELETE)
+	@ResponseBody
+	public Msg deleteEmpById(@PathVariable("ids") String ids) {
+		if(ids.contains("-")){
+			String[] str_ids = ids.split("-");
+			ArrayList<Integer> arrayList = new ArrayList<Integer>();
+			for(String id : str_ids){
+				arrayList.add(Integer.parseInt(id));
+			}
+			employeeService.deleteBatch(arrayList);
+		}else{
+			employeeService.deleteEmp(Integer.parseInt(ids));
+		}
+		return Msg.success(); 
+	}
+	
+	/**
+	 * =====================
+	 * 如果直接发送AJAX=PUT形式的请求
+	 * 封装的数据
+	 * 
+	 * 问题，
+	 * 请求体总有数据：但是Employee对象封装不上；
+	 * update tbl_emp  where emp_id = 1014
+	 * 
+	 * 原因：
+	 * 1.tomcat将请求体中的数据封装成一个map
+	 * 2.request.getParameter("empName")就会从这个map中取值
+	 * 3.SpringMVC封装POJO的时候，会把POJO中的每一个属性的值，request.getParameter("email")
+	 * 
+	 * 
+	 * AJAX发送PUT请求引发的血案
+	 * 	PUT请求，请求体中的数据，request.getParameter("email")拿不到值
+	 * 	Tomcat一看是PUT 不会封装请求体中数据成map，只有POST才会。
+	 * 
+	 * 我们要能支持直接发送PUT请求还要能封装请求体中数据
+	 * 配置HttpPutFormContentFilter，它的作用将请求体中数据包装成一个map
+	 * request被重新包装，request.getParameter()被重写，就会从自己封装的map中取值
+	 * 
+	 * 
+	 * 
+	 * =====================
+	 * 
+	 * @param employee
+	 * @return
+	 */
+	@RequestMapping(value="/emp/{empId}",method=RequestMethod.PUT)
+	@ResponseBody
+	public Msg saveEmp(Employee employee,HttpServletRequest request) {
+		System.out.println("email:"+request.getParameter("email"));
+		System.out.println("封装的数据："+employee.toString());
+		employeeService.saveEmp(employee);
+		return Msg.success(); 
+	}
+	
+	@RequestMapping(value="/emp/{id}",method=RequestMethod.GET)
+	@ResponseBody
+	public Msg getEmp(@PathVariable("id") Integer id) {
+		Employee employee = employeeService.getEmp(id);
+		return Msg.success().add("emp", employee); 
+	}
+	
+	
+	
 	@RequestMapping(value="/checkuser")
 	@ResponseBody
 	public Msg checkUser(@RequestParam(value = "empName") String empName) {
@@ -38,7 +114,7 @@ public class EmployeeController {
 	
 	@RequestMapping(value="/emp",method=RequestMethod.POST)
 	@ResponseBody
-	public Msg saveEmp(Employee employee) {
+	public Msg save(Employee employee) {
 		employeeService.save(employee);
 		return Msg.success();
 	}

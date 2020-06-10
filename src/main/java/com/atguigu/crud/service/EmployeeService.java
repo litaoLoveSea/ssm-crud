@@ -32,5 +32,27 @@ public class EmployeeService {
 		return count == 0 ;
 	}
 
+	public Employee getEmp(Integer id) {
+		return employeeMapper.selectByPrimaryKey(id);
+	}
+
+	public void saveEmp(Employee employee) {
+		employeeMapper.updateByPrimaryKeySelective(employee);
+	}
+
+	public void deleteEmp(Integer id) {
+		employeeMapper.deleteByPrimaryKey(id);
+	}
+
+	public void deleteBatch(List<Integer> ids) {
+		EmployeeExample employeeExample = new EmployeeExample();
+		Criteria createCriteria = employeeExample.createCriteria();
+		//delete from xx where emp_id in(1,2,3)
+		createCriteria.andEmpIdIn(ids);
+		employeeMapper.deleteByExample(employeeExample);
+		
+		
+	}
+
 	
 }
